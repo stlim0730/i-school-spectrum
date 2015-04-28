@@ -1,5 +1,5 @@
 {
-  "name": "i-school-spectrum",
+  "name": "i-school-triangle",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stlim0730/i-school-spectrum.git"
+    "url": "https://github.com/stlim0730/i-school-triangle.git"
   },
   "author": "Seongtaek Lim",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/stlim0730/i-school-spectrum/issues"
+    "url": "https://github.com/stlim0730/i-school-triangle/issues"
   },
-  "homepage": "https://github.com/stlim0730/i-school-spectrum",
+  "homepage": "https://github.com/stlim0730/i-school-triangle",
   "dependencies": {
     "body-parser": "^1.12.3",
     "ejs": "^2.3.1",

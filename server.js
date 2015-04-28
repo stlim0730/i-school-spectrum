@@ -24,7 +24,7 @@ var schema; // require after db connection
 var util = require('./my_util.js');
 
 // schema classes
-var i_school_person; // define after db connection
+var ISchooler; // define after db connection
 
 // set the server
 var app = express();
@@ -51,7 +51,7 @@ mongoose.connect(db_uri, function (err, res) {
   else {
     util.log('Successfully connected to Mongoose: ' + db_uri);
     schema = require('./schema/schema.js');
-    i_school_person = mongoose.model('ISchoolPerson', schema.i_school_person)
+    ISchooler = mongoose.model('ISchooler', schema.ISchooler)
   }
 });
 
@@ -60,20 +60,30 @@ app.get('/', function (req, res) {
   res.render('index.ejs'); // res.render('index', { title: 'Hey', message: 'Hello there!'}); // this is how to use templates
 });
 
+app.get('/viz', function (req, res) {
+  res.render('viz.ejs');
+});
+
 app.post('/viz', function (req, res) {
   var params = req.body;
-  var new_i_school_person = new i_school_person({
+  
+  var newbie = new ISchooler({
     name: params['name'], // TODO: user identifier
     position: params['position_input'],
     x: params['x'],
     y: params['y']
   });
-  new_i_school_person.save(function (err, dataset) {
+
+  newbie.save(function (err, dataset) {
     if (err) throw err;
-
     util.log('A new I School person has been saved in database.');
-
     res.render('viz.ejs');
+  });
+});
+
+app.post('/get_data', function (req, res) {
+  ISchooler.find(function(err, docs) {
+    res.send(docs);
   });
 });
 

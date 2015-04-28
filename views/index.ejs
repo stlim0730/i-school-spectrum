@@ -7,7 +7,6 @@
   content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes' />
 
     <link rel='stylesheet' href='/public/css/bootstrap.min.css'>
-    <link rel='stylesheet' href='/public/css/jquery-ui.min.css'>
     <link href='http://fonts.googleapis.com/css?family=Lato:200,400,700' rel='stylesheet' type='text/css' />
 
     <script src='/public/js/jquery/jquery-1.11.2.min.js'></script>
@@ -68,11 +67,16 @@
       }
 
       .float_right {
-        float: right;
+        float: left;
       }
 
       .clear {
         clear: both;
+      }
+
+      .btn.float_left {
+        margin-top: 20px;
+        margin-left: 20px;
       }
     </style>
   </head>
@@ -80,7 +84,9 @@
   <body>
 
     <div class='container-fluid' id='content'>
-      <div class='h1'><img src='/images/logo.png' /> I School Triangle</div>
+      <div class='h1 float_left'><img src='/images/logo.png' /> I School Triangle</div>
+      <a href='/viz'><button type='button' class='btn btn-default float_left'>Skip to Visualization</button></a>
+      <div class='clear'></div>
       <div class='col-md-5' id='left_sidebar'>
         <br />
         <form id='main_form' action='viz' method='post'>
@@ -111,9 +117,6 @@
         <div class='bg-info hidden h4 contextual_instructions' id='click_inst'>
           Click a point within the triangle below so that the point best represents your research interests.
         </div>
-        <div class='bg-success hidden h4 contextual_instructions' id='done_inst'>
-          ...
-        </div>
         <span class='axis h3 centered hidden'>Artifact</span>
         <div class='hidden' id='canvas'>
           
@@ -129,6 +132,15 @@
       var form_checked = false;
       var paper = null;
       var triangle = null;
+      var h = 0;
+      var w = 0;
+
+      var artifact_x = w/2;
+      var artifact_y = 50;
+      var designer_x = 0;
+      var designer_y = h;
+      var user_x = w;
+      var user_y = h;
 
       function formCheck() {
         var text_inputs = $('input:text');
@@ -146,12 +158,19 @@
         return true;
       }
 
-      function show_inst(inst_id) {
-        $('#' + 'click_inst').removeClass('hidden');
+      function show_inst(inst_id, bool) {
+        if(!bool)
+          $('#' + inst_id).addClass('hidden');
+        else
+          $('#' + inst_id).removeClass('hidden');
       }
 
       function show_axis() {
         $('span.axis').removeClass('hidden');
+        var l = parseInt($('#canvas').css('margin-left')) - 100;
+        var wi = parseInt($('#canvas').width());
+        $('span.axis.float_left').css('padding-left', l+'px');
+        $('span.axis.float_right').css('padding-left', wi+'px');
       }
 
       function show_canvas() {
@@ -159,11 +178,11 @@
       }
 
       function show_empty_triangle() {
-        show_inst('click_inst');
+        show_inst('click_inst', true);
         show_canvas();
         
-        var h = parseInt($('#canvas').height());
-        var w = parseInt($('#canvas').width());
+        h = parseInt($('#canvas').height());
+        w = parseInt($('#canvas').width());
         if(h < w) w = h;
         if(w < h) h = w;
         $('#canvas').height(h);
@@ -171,11 +190,14 @@
 
         show_axis();
 
-        if(paper == null) paper = Raphael('canvas', w, h);
+        if(paper==null)
+          paper = Raphael('canvas', w, h);
+        else
+          paper.clear();
+
         var h_center = w/2;
-        var margin_top = 50;
-        if(triangle == null)
-          triangle = paper.path('M'+w/2+','+margin_top
+        if(triangle==null)
+          triangle = paper.path('M'+w/2+','+artifact_y
             + 'L0,'+h
             + 'L'+w+','+h
             + 'z');
@@ -194,9 +216,26 @@
       });
 
       $('#canvas').click(function (event) {
+        triangle.remove();
+        paper.clear();
+        // paper = null;
+        triangle = null;
+        show_empty_triangle();
+
         var click_x = event.offsetX;
         var click_y = event.offsetY;
+        
         if(!triangle.isPointInside(click_x, click_y)) return;
+
+        var c = paper.circle(click_x, click_y, 4);
+        c.attr('fill', Raphael.getRGB('rgb(51, 122, 183)'));
+        c.attr('stroke-width', 0);
+
+        var n = paper.text(click_x, click_y, $('#name_input').val());
+        n.attr('fill', '#555555');
+        n.attr('stroke-width', 0);
+        n.translate(n.getBBox().width);
+
         var x = click_x / parseFloat($('#canvas').width());
         var y = click_y / parseFloat($('#canvas').height());
         $('#x_input').attr('value', x)

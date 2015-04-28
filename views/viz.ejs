@@ -7,7 +7,6 @@
   content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes' />
 
     <link rel='stylesheet' href='/public/css/bootstrap.min.css'>
-    <link rel='stylesheet' href='/public/css/jquery-ui.min.css'>
     <link href='http://fonts.googleapis.com/css?family=Lato:200,400,700' rel='stylesheet' type='text/css' />
 
     <script src='/public/js/jquery/jquery-1.11.2.min.js'></script>
@@ -37,9 +36,9 @@
         margin-right: 5px;
       }
 
-      #left_sidebar {
+      /*#left_sidebar {
         background-color: #f9f9f9;
-      }
+      }*/
 
       #right_sidebar {
         height: 85%;
@@ -68,7 +67,7 @@
       }
 
       .float_right {
-        float: right;
+        float: left;
       }
 
       .clear {
@@ -80,9 +79,102 @@
   <body>
     <div class='container-fluid' id='content'>
       <div class='h1'><img src='/images/logo.png' /> I School Triangle</div>
+      <!-- <div class='col-md-5' id='left_sidebar'>
+      </div> -->
+      <div class='col-md-12' id='right_sidebar'>
+        <div class='bg-success h4 contextual_instructions' id='done_inst'>
+          This scatter plot shows I School community's interests.
+        </div>
+        <span class='axis h3 centered hidden'>Artifact</span>
+        <div class='hidden' id='canvas'>
+        </div>
+        <span class='axis h3 float_left hidden'>Designer</span>
+        <span class='axis h3 float_right hidden'>User</span>
+        <!-- <div class='clear'></div> -->
+      </div>
+    </div>
     <script>
       var paper = null;
       var triangle = null;
+      var chart = null;
+      var w = 0;
+      var h = 0;
+
+      var artifact_x = w/2;
+      var artifact_y = 50;
+      var designer_x = 0;
+      var designer_y = h;
+      var user_x = w;
+      var user_y = h;
+
+      function show_axis() {
+        $('span.axis').removeClass('hidden');
+        var l = parseInt($('#canvas').css('margin-left')) - 100;
+        var w = parseInt($('#canvas').width());
+        $('span.axis.float_left').css('padding-left', l+'px');
+        $('span.axis.float_right').css('padding-left', w+'px');
+      }
+
+      function show_canvas() {
+        $('#canvas').removeClass('hidden');
+      }
+
+      function show_empty_triangle() {
+        show_canvas();
+        
+        h = parseInt($('#canvas').height());
+        w = parseInt($('#canvas').width());
+        if(h < w) w = h;
+        if(w < h) h = w;
+        $('#canvas').height(h);
+        $('#canvas').width(w);
+
+        show_axis();
+
+        if(paper==null)
+          paper = Raphael('canvas', w, h);
+        else
+          paper.clear();
+
+        var h_center = w/2;
+        if(triangle==null)
+          triangle = paper.path('M'+w/2+','+artifact_y
+            + 'L0,'+h
+            + 'L'+w+','+h
+            + 'z');
+        triangle.attr('stroke', '#555555');
+        triangle.attr('fill', '#f9f9f9');
+      }
+
+      function viz(raw_data) {
+        show_empty_triangle();
+
+        console.log(raw_data);
+
+        for(var i = 0; i < raw_data.length; i++) {
+          var item = raw_data[i];
+
+          var c = paper.circle(item.x * w, item.y * h, 4);
+          c.attr('fill', Raphael.getRGB('rgb(51, 122, 183)'));
+          c.attr('stroke-width', 0);
+
+          var n = paper.text(item.x * w, item.y * h, item.name);
+          n.attr('fill', '#555555');
+          n.attr('stroke-width', 0);
+          n.translate(n.getBBox().width);
+        }
+      }
+
+      $.ajax({
+        url: '/get_data',
+        data: {},
+        dataType: 'json',
+        method: 'POST',
+        async: true,
+        success: function(data) {
+          viz(data);
+        }
+      });
     </script>
   </body>
 </html>
