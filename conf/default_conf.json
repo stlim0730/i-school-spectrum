@@ -1,0 +1,7 @@
+{
+  "port_number": 18320,
+  "public_dir": "/views",
+  "node_modules_dir": "/node_modules",
+  "image_dir": "/images",
+  "db_uri": "mongodb://localhost/i-school-spectrum"
+}
