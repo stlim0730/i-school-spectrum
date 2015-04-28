@@ -1,1 +1,1 @@
-# i-school-spectrum
+# i-school-triangle
