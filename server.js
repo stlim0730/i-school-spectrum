@@ -18,6 +18,7 @@ var upload_dir = __dirname + conf.upload_dir;
 
 // load modules
 var express = require('express');
+var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 var schema; // require after db connection
 var util = require('./my_util.js');
@@ -31,6 +32,8 @@ app.set('port', (process.env.PORT || conf.port_number));
 app.use('/public', express.static(public_dir));
 app.use('/node_modules', express.static(node_modules_dir));
 app.use('/images', express.static(image_dir));
+app.use(bodyParser.json()); // for parsing application/json
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.set('view engine', 'ejs');
 
 // set server parameters
@@ -55,6 +58,23 @@ mongoose.connect(db_uri, function (err, res) {
 // routing definitions
 app.get('/', function (req, res) {
   res.render('index.ejs'); // res.render('index', { title: 'Hey', message: 'Hello there!'}); // this is how to use templates
+});
+
+app.post('/viz', function (req, res) {
+  var params = req.body;
+  var new_i_school_person = new i_school_person({
+    name: params['name'], // TODO: user identifier
+    position: params['position_input'],
+    x: params['x'],
+    y: params['y']
+  });
+  new_i_school_person.save(function (err, dataset) {
+    if (err) throw err;
+
+    util.log('A new I School person has been saved in database.');
+
+    res.render('viz.ejs');
+  });
 });
 
 // app.post('/visualizer', [

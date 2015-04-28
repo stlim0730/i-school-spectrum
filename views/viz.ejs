@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>I School Triangle</title>
+    
+    <meta name='viewport' 
+  content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes' />
+
+    <link rel='stylesheet' href='/public/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='/public/css/jquery-ui.min.css'>
+    <link href='http://fonts.googleapis.com/css?family=Lato:200,400,700' rel='stylesheet' type='text/css' />
+
+    <script src='/public/js/jquery/jquery-1.11.2.min.js'></script>
+    <script src='/public/js/bootstrap/bootstrap.min.js'></script>
+    <script src='/public/js/raphael/raphael-min.js'></script>
+
+    <style>
+      html {
+        height: 100%;
+      }
+
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: 'Lato', sans-serif;
+        font-weight: 200;
+      }
+
+      #content {
+        height: 100%;
+      }
+
+      .h1 > img {
+        height: 1em;
+        margin-top: -5px;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      #left_sidebar {
+        background-color: #f9f9f9;
+      }
+
+      #right_sidebar {
+        height: 85%;
+        border: 1px solid #f0f0f0;
+        text-align: center;
+      }
+
+      .contextual_instructions {
+        text-align: left;
+        padding: 15px;
+        border-radius: 4px;
+      }
+
+      .centered {
+        text-align: center;
+      }
+
+      #canvas {
+        /*background-color: black;*/
+        height: 70%;
+        margin: 0 auto;
+      }
+
+      .float_left {
+        float: left;
+      }
+
+      .float_right {
+        float: right;
+      }
+
+      .clear {
+        clear: both;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div class='container-fluid' id='content'>
+      <div class='h1'><img src='/images/logo.png' /> I School Triangle</div>
+    <script>
+      var paper = null;
+      var triangle = null;
+    </script>
+  </body>
+</html>

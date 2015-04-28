@@ -1,35 +1,215 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>I School Spectrum</title>
+    <title>I School Triangle</title>
     
     <meta name='viewport' 
   content='width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes' />
 
-    <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+    <link rel='stylesheet' href='/public/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='/public/css/jquery-ui.min.css'>
     <link href='http://fonts.googleapis.com/css?family=Lato:200,400,700' rel='stylesheet' type='text/css' />
-    
+
     <script src='/public/js/jquery/jquery-1.11.2.min.js'></script>
     <script src='/public/js/bootstrap/bootstrap.min.js'></script>
+    <script src='/public/js/raphael/raphael-min.js'></script>
 
     <style>
-      html, body {
+      html {
         height: 100%;
       }
 
       body {
+        height: 100%;
         margin: 0;
         font-family: 'Lato', sans-serif;
         font-weight: 200;
+      }
+
+      #content {
+        height: 100%;
+      }
+
+      .h1 > img {
+        height: 1em;
+        margin-top: -5px;
+        margin-left: 5px;
+        margin-right: 5px;
+      }
+
+      #left_sidebar {
+        background-color: #f9f9f9;
+      }
+
+      #right_sidebar {
+        height: 85%;
+        border: 1px solid #f0f0f0;
+        text-align: center;
+      }
+
+      .contextual_instructions {
+        text-align: left;
+        padding: 15px;
+        border-radius: 4px;
+      }
+
+      .centered {
+        text-align: center;
+      }
+
+      #canvas {
+        /*background-color: black;*/
+        height: 70%;
+        margin: 0 auto;
+      }
+
+      .float_left {
+        float: left;
+      }
+
+      .float_right {
+        float: right;
+      }
+
+      .clear {
+        clear: both;
       }
     </style>
   </head>
   
   <body>
 
-    <div class="container-fluid">
-      
+    <div class='container-fluid' id='content'>
+      <div class='h1'><img src='/images/logo.png' /> I School Triangle</div>
+      <div class='col-md-5' id='left_sidebar'>
+        <br />
+        <form id='main_form' action='viz' method='post'>
+          <div class='form-group'>
+            <label for='name_input'>Name</label>
+            <input type='text' class='form-control' name='name' id='name_input' placeholder='Enter your name' /><br />
+            <label for='position_input'>Role / Position</label>
+            <div class='radio'>
+              <label>
+                <input type='radio' name='position_input' id='position_input1' value='faculty' />
+                Faculty
+              </label>
+            </div>
+            <div class='radio'>
+              <label>
+                <input type='radio' name='position_input' id='position_input2' value='student' />
+                Student
+              </label>
+            </div>
+            <input type='hidden' name='x' id='x_input' />
+            <input type='hidden' name='y' id='y_input' />
+          </div>
+        </form>
+        <button type='button' class='btn btn-primary btn-lg btn-block disabled' id='submit_button'>Submit</button>
+        <br/>
+      </div>
+      <div class='col-md-7' id='right_sidebar'>
+        <div class='bg-info hidden h4 contextual_instructions' id='click_inst'>
+          Click a point within the triangle below so that the point best represents your research interests.
+        </div>
+        <div class='bg-success hidden h4 contextual_instructions' id='done_inst'>
+          ...
+        </div>
+        <span class='axis h3 centered hidden'>Artifact</span>
+        <div class='hidden' id='canvas'>
+          
+        </div>
+        <span class='axis h3 float_left hidden'>Designer</span>
+        <span class='axis h3 float_right hidden'>User</span>
+        <div class='clear'></div>
+      </div>
     </div>
+
+    <script>
+      var NUM_OF_REQUIRED_RADIO = 1;
+      var form_checked = false;
+      var paper = null;
+      var triangle = null;
+
+      function formCheck() {
+        var text_inputs = $('input:text');
+        var checked_radio_inputs = $('input[type=radio]:checked');
+
+        for(var i = 0; i < text_inputs.length; i++) {
+          var input = $(text_inputs[i]);
+          var val = input.val();
+          if(val.length == 0) return false;
+        }
+
+        if(checked_radio_inputs.length < NUM_OF_REQUIRED_RADIO)
+          return false;
+        
+        return true;
+      }
+
+      function show_inst(inst_id) {
+        $('#' + 'click_inst').removeClass('hidden');
+      }
+
+      function show_axis() {
+        $('span.axis').removeClass('hidden');
+      }
+
+      function show_canvas() {
+        $('#canvas').removeClass('hidden');
+      }
+
+      function show_empty_triangle() {
+        show_inst('click_inst');
+        show_canvas();
+        
+        var h = parseInt($('#canvas').height());
+        var w = parseInt($('#canvas').width());
+        if(h < w) w = h;
+        if(w < h) h = w;
+        $('#canvas').height(h);
+        $('#canvas').width(w);
+
+        show_axis();
+
+        if(paper == null) paper = Raphael('canvas', w, h);
+        var h_center = w/2;
+        var margin_top = 50;
+        if(triangle == null)
+          triangle = paper.path('M'+w/2+','+margin_top
+            + 'L0,'+h
+            + 'L'+w+','+h
+            + 'z');
+        triangle.attr('stroke', '#555555');
+        triangle.attr('fill', '#f9f9f9');
+      }
+
+      $('input:text').keyup(function (event) {
+        form_checked = formCheck();
+        if(form_checked) show_empty_triangle();
+      });
+
+      $('input:radio').change(function (event) {
+        form_checked = formCheck();
+        if(form_checked) show_empty_triangle();
+      });
+
+      $('#canvas').click(function (event) {
+        var click_x = event.offsetX;
+        var click_y = event.offsetY;
+        if(!triangle.isPointInside(click_x, click_y)) return;
+        var x = click_x / parseFloat($('#canvas').width());
+        var y = click_y / parseFloat($('#canvas').height());
+        $('#x_input').attr('value', x)
+        $('#y_input').attr('value', y)
+        // console.log(x + ', ' + y);
+        $('#click_inst').html('Are you sure? You may still change before you submit.');
+        $('#submit_button').removeClass('disabled');
+      });
+
+      $('#submit_button').click(function (event) {
+        $('#main_form').submit();
+      });
+    </script>
 
   </body>
 </html>
