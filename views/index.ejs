@@ -234,7 +234,7 @@
         var n = paper.text(click_x, click_y, $('#name_input').val());
         n.attr('fill', '#555555');
         n.attr('stroke-width', 0);
-        n.translate((n.getBBox().width / 2) + c.getBBox.width);
+        n.translate(c.getBBox().width + n.getBBox().width / 2);
 
         var x = click_x / parseFloat($('#canvas').width());
         var y = click_y / parseFloat($('#canvas').height());
